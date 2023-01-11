@@ -5,7 +5,8 @@ export default function Home() {
   return (
     <>
       <div>
-        <Link href={'reducer'}>Reducer State</Link>
+      <Link href={'state'}>Use State</Link>
+      <Link href={'reducer'}>Use Reducer</Link>
       </div>
     </>
   );
