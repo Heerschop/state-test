@@ -7,13 +7,18 @@ interface State {
   dateTime: string;
 }
 
+function getDateTime(): string {
+  return new Date(Math.round(Date.now() / 10000) * 10000).toISOString();
+}
+
 export default function Reducer() {
   const [state, setState] = useState<State>({
     text: 'My String',
     value: 10,
-    dateTime: new Date().toISOString(),
+    dateTime: getDateTime(),
   });
 
+  console.log('Page render');
   return (
     <>
       <div>
@@ -21,9 +26,13 @@ export default function Reducer() {
         <div className='flex-wrap'>
           <button
             onClick={() => {
-              state.dateTime = new Date().toISOString();
+              const snapshot = JSON.stringify(state);
 
-              setState({ ...state });
+              state.dateTime = getDateTime();
+
+              if (snapshot !== JSON.stringify(state)) {
+                setState({ ...state });
+              }
             }}
           >
             Set Text
