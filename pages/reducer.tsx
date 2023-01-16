@@ -1,7 +1,7 @@
 import Link from 'next/link';
-import { useReducer } from 'react';
+import { useEffect, useReducer } from 'react';
 
-interface State {
+interface IState {
   text?: string;
   value?: number;
   dateTime?: string;
@@ -11,30 +11,44 @@ function getDateTime(): string {
   return new Date(Math.round(Date.now() / 10000) * 10000).toISOString();
 }
 
-function reducer(state: State, action: string): State {
-  state.text = 'My Text';
-  state.value = 10;
-  state.dateTime = getDateTime();
+type Action = { type: 'text'; value?: string } | { type: 'value'; value?: number } | { type: 'date' };
 
-  return state;
+function reducer(state: IState, action: Action): IState {
+  const update: { [key: string]: () => void } = {
+    text: () => {
+      state.text = 'My Text';
+    },
+    value: () => {
+      state.value = 10;
+    },
+    date: () => {
+      state.dateTime = getDateTime();
+    },
+  };
+
+  const snapshot = JSON.stringify(state);
+  update[action.type]?.();
+
+  return snapshot !== JSON.stringify(state) ? { ...state } : state;
 }
 
 export default function ReducerPage() {
   const [state, dispatch] = useReducer(reducer, {});
 
-  console.log('Page render');
+  useEffect(() => {
+    console.log('effect:', state);
+  }, [state]);
+
+  console.log('render:', state);
+
   return (
     <>
       <div>
-        <h1>Use State</h1>
+        <h1>Use Reducer</h1>
         <div className='flex-wrap'>
-          <button
-            onClick={() => {
-              dispatch('');
-            }}
-          >
-            Set Text
-          </button>
+          <button onClick={() => dispatch({ type: 'date' })}>Date</button>
+          <button onClick={() => dispatch({ type: 'value' })}>Value</button>
+          <button onClick={() => dispatch({ type: 'text' })}>Text</button>
         </div>
         <textarea readOnly rows={8} cols={50} value={JSON.stringify(state, null, 2)}></textarea>
         <Link href={'/'}>Back</Link>
