@@ -1,39 +1,17 @@
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 
-interface IState {
-  text?: string;
-  value?: number;
-  dateTime?: string;
-}
-
-function getDateTime(): string {
-  return new Date(Math.round(Date.now() / 10000) * 10000).toISOString();
-}
-
-type Action = { type: 'text'; value?: string } | { type: 'value'; value?: number } | { type: 'date' };
-
-function reducer(state: IState, action: Action): IState {
-  const update: { [key: string]: () => void } = {
-    text: () => {
-      state.text = 'My Text';
-    },
-    value: () => {
-      state.value = 10;
-    },
-    date: () => {
-      state.dateTime = getDateTime();
-    },
-  };
-
-  const snapshot = JSON.stringify(state);
-  update[action.type]?.();
-
-  return snapshot !== JSON.stringify(state) ? { ...state } : state;
-}
-
 export default function StatePage() {
-  const [state, setState] = useState<IState>({});
+  const [state, updateState] = useState([
+    {
+      text: 'My text 1',
+      value: 'My value 1',
+    },
+    {
+      text: 'My text 2',
+      value: 'My value 2',
+    },
+  ]);
 
   useEffect(() => {
     console.log('effect');
@@ -46,11 +24,25 @@ export default function StatePage() {
       <div>
         <h1>Use State</h1>
         <div className='flex-wrap'>
-          <button onClick={() => setState(reducer(state, { type: 'date' }))}>Date</button>
-          <button onClick={() => setState(reducer(state, { type: 'value' }))}>Value</button>
-          <button onClick={() => setState(reducer(state, { type: 'text' }))}>Text</button>
+          <button
+            onClick={() => {
+              updateState((state) => {
+                const snapshot = JSON.stringify(state);
+
+                state[1].text = 'My text 2 (Update)';
+
+                if (snapshot !== JSON.stringify(state)) {
+                  return [...state];
+                } else {
+                  return state;
+                }
+              });
+            }}
+          >
+            Update
+          </button>
         </div>
-        <textarea readOnly rows={8} cols={50} value={JSON.stringify(state, null, 2)}></textarea>
+        <textarea readOnly rows={10} cols={50} value={JSON.stringify(state, null, 2)}></textarea>
         <Link href={'/'}>Back</Link>
       </div>
     </>

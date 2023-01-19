@@ -8,7 +8,10 @@ export default function Home() {
       <Link href={'state'}>Use State</Link>
       <Link href={'reducer'}>Use Reducer</Link>
       <Link href={'immer'}>Use Immer</Link>
+      <Link href={'zustand'}>Use Zustand</Link>
+
       </div>
+
     </>
   );
 }
